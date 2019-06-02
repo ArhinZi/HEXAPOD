@@ -44,9 +44,9 @@ class Hexapod{
         };
 
         int basicStand[3][2][3] = {
-            {{130, 20, 80}, {50, 160, 100}},
-            {{90, 20, 80}, {90, 160, 100}},
-            {{50, 20, 80}, {130, 160, 100}}
+            {{130, 140, 100}, {50, 40, 80}},
+            {{90, 140, 100}, {90, 40, 80}},
+            {{50, 140, 100}, {130, 40, 80}}
         };
 
         int legsUp[3][2][3] = {
@@ -105,16 +105,22 @@ void setup()
     hexa.attach();
     delay(2000);
 
+    Serial.println("basicState");
     hexa.setPosition(hexa.basicState);
     delay(2000);
 }
 
 void loop()
 {
+    Serial.println("basicState");
     hexa.setPosition(hexa.basicState);
     delay(2000);
+
+    Serial.println("legsUp");
     hexa.setPosition(hexa.legsUp);
     delay(2000);
+
+    Serial.println("basicStand");
     hexa.setPosition(hexa.basicStand);
     delay(2000);
 
