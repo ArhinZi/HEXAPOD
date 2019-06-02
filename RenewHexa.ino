@@ -2,6 +2,16 @@
 
 class Joint{
     public:
+        void set(int degree){
+            // TODO: use limits
+            this->servo.write(degree);
+        }
+        int get(){
+            return this->servo.read();
+        }
+        void attach(int pin){
+            this->servo.attach(pin);
+        }
         Servo servo;
 };
 
@@ -15,7 +25,7 @@ class Hexapod{
         // minimal avaiable, standing and maximum avaiable degrees values
         // [leg][joint][value]
         /*
-        int limits[6][3][3] = {
+        int limits[6][3][2] = {
             {}
         };
         */
@@ -27,11 +37,29 @@ class Hexapod{
             {{33, 32, 31}, {4, 5, 6}}
         };
 
+        int basicState[3][2][3] = {
+            {{130, 90, 90}, {50, 90, 90}},
+            {{90, 90, 90}, {90, 90, 90}},
+            {{50, 90, 90}, {130, 90, 90}}
+        };
+
+        int basicStand[3][2][3] = {
+            {{130, 20, 80}, {50, 160, 100}},
+            {{90, 20, 80}, {90, 160, 100}},
+            {{50, 20, 80}, {130, 160, 100}}
+        };
+
+        int legsUp[3][2][3] = {
+            {{130, 40, 140}, {50, 140, 40}},
+            {{90, 40, 100}, {90, 140, 80}},
+            {{50, 40, 100}, {130, 140, 80}}
+        };
+
         void attach(){
             for (int segment = 0; segment < 3; segment++){
                 for (int side = 0; side < 2; side++){
                     for (int phalanx = 0; phalanx < 3; phalanx++){
-                        this->legs[segment][side].joints[phalanx].servo.attach(this->pins[segment][side][phalanx]);
+                        this->legs[segment][side].joints[phalanx].attach(this->pins[segment][side][phalanx]);
                     }
                     Serial.println();
                 }
@@ -43,7 +71,7 @@ class Hexapod{
             for (int segment = 0; segment < 3; segment++){
                 for (int side = 0; side < 2; side++){
                     for (int phalanx = 0; phalanx < 3; phalanx++){
-                        Serial.print(this->legs[segment][side].joints[phalanx].servo.read());
+                        Serial.print(this->legs[segment][side].joints[phalanx].get());
                         Serial.print(" ");
                     }
                     Serial.println();
@@ -51,11 +79,12 @@ class Hexapod{
             }
         }
 
-        void stand() {
+        void setPosition(int position[3][2][3]){
+            this->logState();
             for (int segment = 0; segment < 3; segment++){
                 for (int side = 0; side < 2; side++){
                     for (int phalanx = 0; phalanx < 3; phalanx++){
-                        this->legs[segment][side].joints[phalanx].servo.write(90);
+                        this->legs[segment][side].joints[phalanx].set(position[segment][side][phalanx]);
                     }
                 }
             }
@@ -75,13 +104,18 @@ void setup()
     Serial.println("Hello Hexa!");
     hexa.attach();
     delay(2000);
-    hexa.logState();
-    hexa.stand();
 
+    hexa.setPosition(hexa.basicState);
+    delay(2000);
 }
 
 void loop()
 {
-    hexa.logState();
+    hexa.setPosition(hexa.basicState);
     delay(2000);
+    hexa.setPosition(hexa.legsUp);
+    delay(2000);
+    hexa.setPosition(hexa.basicStand);
+    delay(2000);
+
 }
